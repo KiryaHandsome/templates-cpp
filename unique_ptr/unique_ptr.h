@@ -24,7 +24,7 @@ public:
 };
 
 template<class T, class...Args>
-unique_ptr<T> make_unique(Args&... args);
+unique_ptr<T> make_unique(Args&&... args);
 
 #endif
 

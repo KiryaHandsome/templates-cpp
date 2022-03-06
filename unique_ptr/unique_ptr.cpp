@@ -48,7 +48,7 @@ template<class T>
 bool unique_ptr<T>::isNull() const { return m_ptr == nullptr; }
 
 template<class T, class... Args>
-unique_ptr<T> make_unique(Args ...args)
+unique_ptr<T> make_unique(Args&& ...args)
 {
 	return unique_ptr<T>(new T((args)...));
 }
