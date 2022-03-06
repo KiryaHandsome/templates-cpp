@@ -15,7 +15,7 @@ unique_ptr<T>::unique_ptr(unique_ptr&& a) //move constructor
 {
 	delete m_ptr;
 
-	m_ptr = std::move(a.m_ptr);
+	m_ptr = a.m_ptr;
 	a.m_ptr = nullptr;
 }
 
@@ -34,12 +34,12 @@ T* unique_ptr<T>::operator->() const
 template<class T>
 unique_ptr<T>& unique_ptr<T>::operator=(unique_ptr&& a) 
 {
-	if (a == this) {
+	if (&a == this) {
 		return *this;
 	}
 	
 	delete m_ptr;
-	m_ptr = std::move(a.m_ptr);
+	m_ptr = a.m_ptr;
 	a.m_ptr = nullptr;
 
 	return *this;
