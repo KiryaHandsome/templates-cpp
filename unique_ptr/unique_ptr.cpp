@@ -1,5 +1,4 @@
 #include "unique_ptr.h"
-#include <utility>
 
 template<class T>
 unique_ptr<T>::unique_ptr(T* ptr) : m_ptr(ptr) { }
