@@ -1,9 +1,6 @@
 #include "shared_ptr.h"
 
 
-
-
-
 template<class T>
 shared_ptr<T>::shared_ptr() : m_ptr(nullptr), refCount(new int(0))	//default constructor
 {
