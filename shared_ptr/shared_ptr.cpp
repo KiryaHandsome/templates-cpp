@@ -1,5 +1,5 @@
 #include "shared_ptr.h"
-
+#include <utility>
 
 
 
@@ -62,7 +62,8 @@ shared_ptr<T>::shared_ptr(shared_ptr&& obj) noexcept
 	m_ptr = obj.m_ptr;		//share obj
 	refCount = obj.refCount;
 
-	obj.refCount = obj.m_ptr = nullptr;	 //clean old values
+	obj.refCount = nullptr;	 //clean old values
+	obj.m_ptr = nullptr;
 }
 
 template<class T>
@@ -73,7 +74,8 @@ shared_ptr<T>& shared_ptr<T>::operator=(shared_ptr<T>&& obj) noexcept
 	m_ptr = obj.m_ptr;		//share obj
 	refCount = obj.refCount;
 
-	obj.refCount = obj.m_ptr = nullptr;	 //clean old values
+	obj.refCount = nullptr;	 //clean old values
+	obj.m_ptr = nullptr;
 
 	return *this;
 }
@@ -105,5 +107,5 @@ bool shared_ptr<T>::isNull() const
 template<class T, class... Args>
 shared_ptr<T> make_shared(Args&& ...args)
 {
-	return shared_ptr<T>(new T((args)...));
+	return shared_ptr<T>(new T(std::forward<Args>(args)...));
 }
