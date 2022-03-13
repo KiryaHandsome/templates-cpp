@@ -81,11 +81,6 @@ public:
 
 		return *this;
 	}
-
-
-	
-	
-
 };
 
 #endif
