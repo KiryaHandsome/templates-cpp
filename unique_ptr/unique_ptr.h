@@ -7,24 +7,52 @@ class unique_ptr
 private:
 	T* m_ptr;
 public:
-	unique_ptr(unique_ptr<T>& a) = delete;
-	unique_ptr<T>& operator=(unique_ptr<T>& a) = delete;
+	unique_ptr(T* ptr) : m_ptr(ptr) { }
 
+	~unique_ptr()
+	{
+		delete m_ptr;
+	}
 
-	unique_ptr(T* ptr = nullptr);
-	unique_ptr(unique_ptr<T>&& a) noexcept;
-	~unique_ptr();
-	
-	T& operator*() const;
-	T* operator->() const;
+	unique_ptr(unique_ptr&& a) noexcept //move constructor
+	{
+		delete m_ptr;
 
-	unique_ptr<T>& operator=(unique_ptr<T>&& a) noexcept;
+		m_ptr = a.m_ptr;
+		a.m_ptr = nullptr;
+	}
 
-	bool isNull() const;
+	T& operator*() const
+	{
+		return *m_ptr;
+	}
+
+	T* operator->() const
+	{
+		return m_ptr;
+	}
+
+	unique_ptr<T>& operator=(unique_ptr&& a) noexcept
+	{
+		if (&a == this) {
+			return *this;
+		}
+
+		delete m_ptr;
+		m_ptr = a.m_ptr;
+		a.m_ptr = nullptr;
+
+		return *this;
+	}
+
+	bool isNull() const { return m_ptr == nullptr; }
 };
 
-template<class T, class...Args>
-unique_ptr<T> make_unique(Args&&... args);
+template<class T, class... Args>
+unique_ptr<T> make_unique(Args&& ...args)
+{
+	return unique_ptr<T>(new T(std::forward<Args>(args)...));
+}
 
 #endif
 
