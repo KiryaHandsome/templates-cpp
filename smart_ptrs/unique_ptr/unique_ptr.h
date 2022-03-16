@@ -9,7 +9,10 @@ class unique_ptr
 private:
 	T* m_ptr = nullptr;
 public:
-	unique_ptr(T* ptr) : m_ptr(ptr) { }
+	unique_ptr(const unique_ptr& ptr) = delete;
+	unique_ptr& operator=(unique_ptr& a) = delete;
+
+	explicit unique_ptr(T* ptr) : m_ptr(ptr) { }
 
 	~unique_ptr()
 	{
@@ -19,8 +22,6 @@ public:
 
 	unique_ptr(unique_ptr&& a) noexcept //move constructor
 	{
-		delete m_ptr;
-
 		m_ptr = a.m_ptr;
 		a.m_ptr = nullptr;
 	}
@@ -83,7 +84,10 @@ class unique_ptr<T[]>
 private:
 	T* m_ptr;
 public:
-	unique_ptr(T* ptr) : m_ptr(ptr) { }
+	unique_ptr(const unique_ptr& ptr) = delete;
+	unique_ptr& operator=(unique_ptr& a) = delete;
+
+	explicit unique_ptr(T* ptr) : m_ptr(ptr) { }
 
 	~unique_ptr()
 	{
@@ -93,8 +97,6 @@ public:
 
 	unique_ptr(unique_ptr&& a) noexcept //move constructor
 	{
-		delete m_ptr;
-
 		m_ptr = a.m_ptr;
 		a.m_ptr = nullptr;
 	}
@@ -165,6 +167,18 @@ make_unique(int n)
 
 template<class T, class U>
 bool operator==(const unique_ptr<T>& x, const unique_ptr<U>& y) { return x.get() == y.get(); }
+
+template<class T, class U>
+bool operator<(const unique_ptr<T>& x, const unique_ptr<U>& y) { return x.get() < y.get(); }
+
+template<class T, class U>
+bool operator>(const unique_ptr<T>& x, const unique_ptr<U>& y) { return x.get() > y.get(); }
+
+template<class T, class U>
+bool operator<=(const unique_ptr<T>& x, const unique_ptr<U>& y) { return x.get() <= y.get(); }
+
+template<class T, class U>
+bool operator>=(const unique_ptr<T>& x, const unique_ptr<U>& y) { return x.get() >= y.get(); }
 
 template<class T, class U>
 bool operator!=(const unique_ptr<T>& x, const unique_ptr<U>& y) { return x.get() != y.get(); }
