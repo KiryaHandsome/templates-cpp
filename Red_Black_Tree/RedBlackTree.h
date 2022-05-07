@@ -12,9 +12,9 @@ class RBTree
 public:
 	using KeyType		  = typename Traits::key;
 	using ValueType		  = typename Traits::value;
-	using key_compare     = typename Traits::key_compare;
+	using key_compare     	  = typename Traits::key_compare;
 	using reference		  = ValueType&;
-	using const_reference = const ValueType&;
+	using const_reference     = const ValueType&;
 
 	class Iterator;
 	class Reverse_Iterator;
