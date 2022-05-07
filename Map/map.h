@@ -18,14 +18,14 @@ class Map : public RBTree<MapTraits<KeyT, ValueT, Compare>>
 {
 	using Tree = RBTree<MapTraits<KeyT, ValueT, Compare>>;
 public:
-	using Node		 = typename Tree::Node;
-	using MappedType	 = ValueT;
-	using iterator	         = typename Tree::Iterator;
+	using Node				 = typename Tree::Node;
+	using MappedType	     = ValueT;
+	using iterator			 = typename Tree::Iterator;
 	using reverse_iterator   = typename Tree::Reverse_Iterator;
-	using l_iterator	 = typename Tree::l_iterator;
+	using l_iterator		 = typename Tree::l_iterator;
 	using reverse_l_iterator = typename Tree::reverse_l_iterator;
-	using ValueType		 = typename MapTraits<KeyT, ValueT, Compare>::value;
-	using KeyType		 = typename MapTraits<KeyT, ValueT, Compare>::key;	
+	using ValueType			 = typename MapTraits<KeyT, ValueT, Compare>::value;
+	using KeyType		     = typename MapTraits<KeyT, ValueT, Compare>::key;	
 
 
 	Map(): Tree() {
@@ -53,7 +53,7 @@ public:
 		return Tree::insert(value.first, value);
 	}
 
-	ValueType& operator[](const KeyType& key)
+	MappedType& operator[](const KeyType& key)
 	{
 		return insert(key, ValueType()).first->value;
 	}
