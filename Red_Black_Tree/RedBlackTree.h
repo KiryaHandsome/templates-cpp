@@ -3,6 +3,7 @@
 #include <functional>
 #include <list>
 #include <type_traits>
+#include <iostream>
 
 
 
@@ -86,22 +87,7 @@ public:
 
 
 
-	Node* search(const KeyType& key)
-	{
-		Node* curr = root;
-		while (curr != nullptr) {
-			if (comp(curr->key, key)) {
-				curr = curr->right;
-			}
-			else if (comp(key, curr->key)) {
-				curr = curr->left;
-			}
-			else {
-				return curr;
-			}
-		}
-		return nullptr;
-	}
+
 
 	bool erase(const KeyType& key) {
 		Node* node = root;
@@ -193,6 +179,23 @@ public:
 	}
 
 protected:
+    Node* search(const KeyType& key)
+    {
+        Node* curr = root;
+        while (curr != nullptr) {
+            if (comp(curr->key, key)) {
+                curr = curr->right;
+            }
+            else if (comp(key, curr->key)) {
+                curr = curr->left;
+            }
+            else {
+                return curr;
+            }
+        }
+        return nullptr;
+    }
+
 	std::pair<iterator, bool> insert(const KeyType& key, const ValueType& value = ValueType())
 	{
 		Node* new_node = new Node(key, value);
@@ -260,7 +263,7 @@ public:
 		Iterator& operator=(const Iterator& other)
 		{
 			node = other.node;
-			tree = other->tree;
+            tree = other.tree;
 			return *this;
 		}
 
@@ -360,7 +363,7 @@ public:
 		Const_Iterator& operator=(const Const_Iterator& other)
 		{
 			node = other.node;
-			tree = other->tree;
+            tree = other.tree;
 			return *this;
 		}
 
@@ -460,6 +463,7 @@ public:
 		Reverse_Iterator& operator=(const Reverse_Iterator& other)
 		{
 			node = other.node;
+            tree = other.tree;
 			return *this;
 		}
 
@@ -494,7 +498,7 @@ public:
 			else {
 				KeyType key = node->key;
 				node = node->parent;
-				while (key_compare().operator()(key, node->key) && node != nullptr) {
+                while (node != nullptr && key_compare().operator()(key, node->key)) {
 					node = node->parent;
 				}
 			}
@@ -523,7 +527,7 @@ public:
 		{
 			auto it = *this;
 			if (node == nullptr) {
-				node = tree->max_node(root);
+                node = tree->max_node(tree->root);
 			}
 			else if (node->left != nullptr) {
 				node = tree->max_node(node->left);
