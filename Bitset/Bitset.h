@@ -1,6 +1,9 @@
 #pragma once
 
 
+#include <bit>
+#include <iostream>
+
 
 template <size_t bits>
 class Bitset
@@ -9,7 +12,7 @@ private:
     enum { BITS_IN_BYTE = 8 };
     using type = unsigned long long;
     static const size_t bits_per_word = BITS_IN_BYTE * sizeof(type);
-    static const size_t words = bits == 0 ? 0 : (bits - 1) / BITS_IN_BYTE + 1;
+    static const size_t words = bits == 0 ? 0 : (bits - 1) / bits_per_word + 1;
     type _array[words];
 public:
     // proxy for an element
@@ -92,6 +95,9 @@ public:
 
     Bitset& flip(size_t pos)    //flip bit on position
     {
+        if (bits <= pos) {
+            throw std::out_of_range("bitset out of range"); // pos off end
+        }
         _array[pos / bits_per_word] ^= type{ 1 } << pos % bits_per_word;
         return *this;
     }
@@ -114,12 +120,23 @@ public:
 
     size_t count() const    //number of bits that are set to true
     {  
-        static char _Bitsperhex[] = "\0\1\1\2\1\2\2\3\1\2\2\3\2\3\3\4";
+        //function from stl
+        auto popcount = [&](type _Val){
+            constexpr int _Digits = std::numeric_limits<type>::digits;
+            // we static_cast these bit patterns in order to truncate them to the correct size
+            _Val = static_cast<type>(_Val - ((_Val >> 1) & static_cast<type>(0x5555'5555'5555'5555ull)));
+            _Val = static_cast<type>((_Val & static_cast<type>(0x3333'3333'3333'3333ull))
+                                    + ((_Val >> 2) & static_cast<type>(0x3333'3333'3333'3333ull)));
+            _Val = static_cast<type>((_Val + (_Val >> 4)) & static_cast<type>(0x0F0F'0F0F'0F0F'0F0Full));
+            // Multiply by one in each byte, so that it will have the sum of all source bytes in the highest byte
+            _Val = static_cast<type>(_Val * static_cast<type>(0x0101'0101'0101'0101ull));
+            // Extract highest byte
+            return static_cast<size_t>(_Val >> (_Digits - 8));
+        };
+
         size_t value = 0;
         for (int pos = words - 1; pos >= 0; --pos) {
-            for (type _Wordval = _array[pos]; _Wordval != 0; _Wordval >>= 4) {
-                value += _Bitsperhex[_Wordval & 0xF];
-            }
+            value += popcount(_array[pos]);
         }
         return value;
     }
