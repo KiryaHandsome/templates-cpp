@@ -18,9 +18,6 @@ public:
     using iterator = typename std::list<value_type>::iterator;
 
 
-
-
-
 private:
 
     Hash hasher;
@@ -64,17 +61,18 @@ public:
         return std::make_pair(iter, true);
     }
 
-    void rehash(size_t count)
+    bool rehash(size_t count)
     {
-        if (count < _buckets_count) return;
-        _buckets_count = count;
+        if (count <= _buckets_count) return false;
 
         auto temp_list = list;
         clear();
+        _buckets_count = count;
         buckets.resize(_buckets_count);
         for (auto& it : temp_list) {
             insert(it);
         }
+        return true;
     }
 
     void clear()
@@ -96,15 +94,15 @@ public:
         size_t bucket = hasher(key) % _buckets_count;
 
         auto iter = list.end();
-        auto prev = buckets[bucket].begin();//element before current
+        auto prev = buckets[bucket].before_begin();//element before current
 
-        for (auto curr = buckets[bucket].begin(); curr != buckets[bucket].end(); ++curr) {
-            if ((*(*curr)).first == key) {
-                iter = *curr;
+        for (auto& curr : buckets[bucket]) {
+            if ((*curr).first == key) {
+                iter = curr;
                 buckets[bucket].erase_after(prev);
                 break;
             }
-            prev = curr;
+            ++prev;
         }
         if (iter != list.end()) {
             --_size;
@@ -152,7 +150,7 @@ public:
     {
         auto iter = find(key);
         if (iter != list.end()) return (*iter).second;
-        return (*insert({key, mapped_type()}).first).second;
+        return (*insert({ key, mapped_type() }).first).second;
     }
 
     size_t count(const key_type& key)
@@ -183,6 +181,8 @@ public:
     float load_factor() { return static_cast<float>(size()) / static_cast<float>(_buckets_count); }
 
     float max_load_factor() { return MAX_LOAD_FACTOR; }
+
+    size_t bucket_count() const { return _buckets_count; }
 
 private:
     bool need_rehash() {
